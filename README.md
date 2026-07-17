@@ -12,6 +12,19 @@ This is a CLI translation of the [PBIX A11y](https://pbiaudits.com) browser
 tool: same rule engine, same checks, pointed at a project folder on disk
 instead of a browser file-drop.
 
+## Quick Start
+
+```bash
+npm install
+npm run build
+npm link
+pbir-a11y check ./MyReport
+```
+
+That's it: point it at a PBIP project folder and it prints a score plus any
+accessibility issues it finds. See Usage below for the full command
+reference.
+
 ## Use as a Claude Code skill
 
 The repo is also a valid Claude Code plugin (`.claude-plugin/plugin.json` +
@@ -38,26 +51,26 @@ cp -r skills/pbir-a11y ~/.claude/skills/pbir-a11y
 ```
 
 Either way, the CLI itself (`pbir-a11y`) still needs to be installed and on
-`PATH` (see Install, below); the skill just tells the agent when and how to
+`PATH` (see Install, above): the skill just tells the agent when and how to
 call it.
 
 > **Note on the marketplace install path:** this repo includes
 > `.claude-plugin/plugin.json` and `skills/pbir-a11y/SKILL.md`, which is
 > Anthropic's documented, required structure for a plugin. It does **not**
-> include a `marketplace.json`; the exact schema for self-hosting a
+> include a `marketplace.json`: the exact schema for self-hosting a
 > single-plugin repo as its own marketplace source wasn't something I could
 > verify with full confidence when this was put together, so it was left
 > out rather than guessed at. If `claude plugin marketplace add
 > <username>/pbir-a11y` doesn't pick the repo up as-is, check the current
 > schema at `code.claude.com/docs/en/plugin-marketplaces` before assuming
-> the plugin itself is broken; the project-scope/user-scope copy method
+> the plugin itself is broken: the project-scope/user-scope copy method
 > above doesn't depend on this and is confirmed to work.
 
 ## Why PBIP, not PBIX
 
-A `.pbix` is a compiled binary; nobody hand-edits it, so it doesn't fit a
-dev-time, agent-in-the-loop workflow. A PBIP project (`MyReport.pbip` plus
-`MyReport.Report/` plus `MyReport.SemanticModel/`) is a plain, git-diffable
+A `.pbix` is a compiled binary: nobody hand-edits it, so it doesn't fit a
+dev-time, agent-in-the-loop workflow. A PBIP project (`MyReport.pbip` +
+`MyReport.Report/` + `MyReport.SemanticModel/`) is a plain, git-diffable
 folder tree, and PBIR is the report-definition format inside the `.Report`
 folder (`definition/pages/<page>/visuals/<id>/visual.json`). That's what
 this CLI reads directly: no zipping, no upload step.
@@ -111,4 +124,41 @@ across unchanged except for one file:
 
 | File | Status |
 |---|---|
-| `rulesEngine.ts`, `contrastUtils.ts`, `apca.ts`, `colourblindUtils.ts`, `contrastSuggest.ts`, `fontScaling.ts`, `clutterIndex.ts`, `customVisuals.ts`,
+| `rulesEngine.ts`, `contrastUtils.ts`, `apca.ts`, `colourblindUtils.ts`, `contrastSuggest.ts`, `fontScaling.ts`, `clutterIndex.ts`, `customVisuals.ts`, `pbixParser.ts` | **Unchanged.** Pure logic, no browser dependency. |
+| `pbirParser.ts` | **Lightly refactored.** The original `parsePbir(file: File)` only ever loaded a zip via a browser file-drop. It's now split into `parsePbir(file: File)` (unchanged, still there for anything browser-based) and a new `parsePbirFromZip(zip, name, size)` that takes an already-built JSZip instance. `parsePbir` calls `parsePbirFromZip` internally: no rule logic changed, only where the zip gets built. |
+
+Everything under `src/io/` and `src/commands/`, plus `src/cli.ts`, is new, as
+are `.claude-plugin/plugin.json` and `skills/pbir-a11y/SKILL.md` (the agent
+packaging):
+
+- **`src/io/loadFromFolder.ts`**: walks a PBIP project folder on disk and
+  builds an in-memory JSZip mirroring it, then hands that straight to
+  `parsePbirFromZip`. This is what lets the CLI read a real folder instead
+  of requiring a zip upload.
+- **`src/commands/check.ts`**: runs `analyze()` against the loaded report,
+  prints a human summary or `--json`, sets the process exit code.
+- **`src/commands/explain.ts`**: static per-category documentation
+  (what it checks, which WCAG criterion), independent of any report, so an
+  agent can look up a rule without needing a project on hand.
+
+The five original `.tsx` React components (`GuestAudit`, `Results`, etc.)
+were not ported: they're browser UI for pbiaudits.com and have no
+equivalent in a CLI; the CLI's `check` command replaces their role.
+
+## Roadmap ideas
+
+- `pbir-a11y fix`: auto-correct the deterministic issues (bump undersized
+  targets, reorder duplicate tab indices) the way `pbir.tools set -f` does
+  for general formatting.
+- `pbir-a11y watch`: re-run checks on file save during active development.
+- PBIX support in `src/io/` for auditing shipped files, reusing
+  `pbixParser.ts` (already ported, untouched).
+
+## License
+
+[PolyForm Noncommercial License 1.0.0](./LICENSE): free to use, modify,
+and redistribute for any noncommercial purpose (personal, educational,
+charitable, research, government). Commercial use (selling the software,
+bundling it into a paid product or service, or offering paid consulting
+built on it) is not permitted under this license. Get in touch for a
+commercial license if you need one.
