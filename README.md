@@ -1,3 +1,4 @@
+[![License](https://img.shields.io/badge/license-PolyForm--Noncommercial--1.0.0-blue)](./LICENSE) [![Power BI](https://img.shields.io/badge/Power_BI-F2C811?logo=powerbi&logoColor=000)](https://powerbi.microsoft.com) [![Node](https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org) [![Claude Code Compatible](https://img.shields.io/badge/Claude_Code-compatible-D97757?logo=claude&logoColor=fff)](https://code.claude.com)
 # PBIR A11y CLI
 
 `pbir-a11y` — accessibility checks for Power BI **PBIP/PBIR** projects — for use by a person
