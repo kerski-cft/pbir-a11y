@@ -1,6 +1,6 @@
 # PBIR A11y CLI
 
-[![License](https://img.shields.io/badge/license-PolyForm--Noncommercial--1.0.0-blue)](./LICENSE) [![Power BI](https://img.shields.io/badge/Power_BI-F2C811?logo=powerbi&logoColor=000)](https://powerbi.microsoft.com) [![Node](https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org) [![Claude Code Compatible](https://img.shields.io/badge/Claude_Code-compatible-D97757?logo=claude&logoColor=fff)](https://code.claude.com)
+[![License](https://img.shields.io/badge/license-PolyForm--Shield--1.0.0-blue)](./LICENSE) [![Power BI](https://img.shields.io/badge/Power_BI-F2C811?logo=powerbi&logoColor=000)](https://powerbi.microsoft.com) [![Node](https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org) [![Claude Code Compatible](https://img.shields.io/badge/Claude_Code-compatible-D97757?logo=claude&logoColor=fff)](https://code.claude.com)
 
 `pbir-a11y` (accessibility checks for Power BI **PBIP/PBIR** projects) for use by a person
 during development, or by an AI coding agent (Claude Code, Copilot, etc.)
@@ -156,9 +156,17 @@ equivalent in a CLI; the CLI's `check` command replaces their role.
 
 ## License
 
-[PolyForm Noncommercial License 1.0.0](./LICENSE): free to use, modify,
-and redistribute for any noncommercial purpose (personal, educational,
-charitable, research, government). Commercial use (selling the software,
-bundling it into a paid product or service, or offering paid consulting
-built on it) is not permitted under this license. Get in touch for a
-commercial license if you need one.
+[PolyForm Shield License 1.0.0](https://github.com/Juls-BI/pbir-a11y/blob/main/LICENSE)
+
+**You can:**
+- Use this for personal projects, learning, and experimentation
+- Use it in your day job or freelance work — run it in your own or your
+  employer's dev/CI workflows, paid work included
+- Modify it, fork it, and contribute changes back
+
+**You can't:**
+- Build or offer a competing product or service based on this tool — e.g.
+  a paid or free accessibility-checking website/SaaS similar to
+  [PBIX A11y](https://www.pbiaudits.com)
+
+Want to build something like PBIX A11y using this code? Get in touch about a commercial license.
