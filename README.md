@@ -160,12 +160,12 @@ equivalent in a CLI; the CLI's `check` command replaces their role.
 
 **You can:**
 - Use this for personal projects, learning, and experimentation
-- Use it in your day job or freelance work — run it in your own or your
+- Use it in your day job or freelance work, run it in your own or your
   employer's dev/CI workflows, paid work included
 - Modify it, fork it, and contribute changes back
 
 **You can't:**
-- Build or offer a competing product or service based on this tool — e.g.
+- Build or offer a competing product or service based on this tool: e.g.
   a paid or free accessibility-checking website/SaaS similar to
   [PBIX A11y](https://www.pbiaudits.com)
 
