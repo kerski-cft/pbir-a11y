@@ -31,7 +31,21 @@ description: "Use this skill whenever creating, editing, or reviewing a Power BI
 - `--category <name>` — scope to one check (`contrast`, `altText`, `clutter`, `pageTitles`, `visualTitles`, `axisTitles`, `fontScaling`, `tabOrder`, `targetSize`, `customVisuals`) when you only touched one aspect of the report
 - `--page <name>` — scope to the page you just edited, to avoid re-reporting pre-existing issues elsewhere in the project as if they were new
 - `--fail-on warn` — treat warnings as blocking too (default only fails on `fail`-severity issues), useful before a publish step
+- `--include-hidden` — also check pages marked hidden-in-view-mode (e.g. drillthrough/tooltip pages). These are skipped by default since end users don't land on them directly, but if the report reaches them via drillthrough or bookmarks, their visuals still need auditing  -  use this flag when the user asks for a full/complete audit, not just the pages in normal navigation
+- `--docx <path>` — in addition to the normal output, write a formatted Word document of the findings to `<path>`. Use this when the user asks to "export", "share", or "present" the findings, e.g. to a client or stakeholder who won't be reading raw CLI/JSON output
 - Exit code: `0` clean, `1` issues found at or above `--fail-on` threshold, `2` couldn't read the project (bad path, unsupported format)
+
+## Avoiding truncated results
+
+`check` prints every issue with no pagination on its side, but if you (or the
+user) are reading it from a terminal rather than parsing `--json`, a short or
+narrow terminal window can scroll earlier findings out of view before they're
+seen  -  this can look like the tool "missed" issues on visuals covered earlier
+in the run when it didn't. Prefer `--json` (or `--docx`) as the source of
+truth over eyeballing scrolled terminal output, and if a human reports issues
+that "should have" been flagged but weren't visible in what they pasted,
+re-run with `--json` yourself and check the full result before concluding
+there's a real bug in the rule engine.
 
 ## Looking up a rule without running a check
 

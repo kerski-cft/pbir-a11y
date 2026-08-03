@@ -191,6 +191,7 @@ export async function parsePbirFromZip(
   zip: JSZip,
   sourceName: string,
   sourceSize: number,
+  opts?: { includeHidden?: boolean },
 ): Promise<PBIRParseResult> {
   const warnings: string[] = [];
 
@@ -234,7 +235,7 @@ export async function parsePbirFromZip(
 
   let report: ParsedReport;
   try {
-    report = buildReportFromLayout(layout, sourceName, sourceSize);
+    report = buildReportFromLayout(layout, sourceName, sourceSize, opts);
   } catch (e) {
     if (e instanceof PBIXParseError) throw new PBIRParseError(e.message);
     throw new PBIRParseError("The PBIP/PBIR layout could not be parsed.");

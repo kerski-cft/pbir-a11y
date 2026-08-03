@@ -86,7 +86,10 @@ export function resolveReportRoot(inputPath: string): string {
  * Reads a PBIP/PBIR project from a folder on disk and runs it through the
  * same parsing + normalisation logic as the browser tool.
  */
-export async function loadPbirFromFolder(inputPath: string): Promise<PBIRParseResult> {
+export async function loadPbirFromFolder(
+  inputPath: string,
+  opts?: { includeHidden?: boolean },
+): Promise<PBIRParseResult> {
   const reportRoot = resolveReportRoot(inputPath);
 
   const zip = new JSZip();
@@ -102,5 +105,5 @@ export async function loadPbirFromFolder(inputPath: string): Promise<PBIRParseRe
     }
   }
 
-  return parsePbirFromZip(zip, sourceName, sourceSize);
+  return parsePbirFromZip(zip, sourceName, sourceSize, opts);
 }

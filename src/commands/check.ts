@@ -1,13 +1,18 @@
+import * as fs from "node:fs";
+import * as nodePath from "node:path";
 import type { Command } from "commander";
 import { loadPbirFromFolder } from "../io/loadFromFolder";
-import { analyze, ALL_CHECKS, type Category, type Severity } from "../lib/rulesEngine";
+import { analyze, describeVisual, ALL_CHECKS, type Category, type Severity } from "../lib/rulesEngine";
 import { PBIRParseError } from "../lib/pbirParser";
+import { buildAccessibilityDocx } from "../lib/docxReport";
 
 interface CheckOptions {
   json?: boolean;
   category?: string;
   failOn?: string;
   page?: string;
+  includeHidden?: boolean;
+  docx?: string;
 }
 
 const SEVERITY_RANK: Record<Severity, number> = { pass: 0, info: 1, warn: 2, fail: 3 };
@@ -42,9 +47,17 @@ export function registerCheckCommand(program: Command): void {
       "fail",
     )
     .option("--page <name>", "Only show results for one page (by display name or id)")
+    .option(
+      "--include-hidden",
+      "Also check pages marked hidden-in-view-mode (e.g. drillthrough/tooltip pages), which are skipped by default",
+    )
+    .option(
+      "--docx <path>",
+      "Also write a formatted Word document of the findings to this path, suitable for sharing with a client or stakeholder",
+    )
     .action(async (path: string, opts: CheckOptions) => {
       try {
-        const { report, warnings } = await loadPbirFromFolder(path);
+        const { report, warnings } = await loadPbirFromFolder(path, { includeHidden: opts.includeHidden });
 
         const selection = { ...ALL_CHECKS };
         if (opts.category) {
@@ -73,6 +86,14 @@ export function registerCheckCommand(program: Command): void {
           process.stdout.write(JSON.stringify({ ...result, pages }, null, 2) + "\n");
         } else {
           printHuman(result, pages, warnings);
+        }
+
+        if (opts.docx) {
+          const outPath = nodePath.resolve(opts.docx);
+          const buffer = await buildAccessibilityDocx(result, pages);
+          fs.mkdirSync(nodePath.dirname(outPath), { recursive: true });
+          fs.writeFileSync(outPath, buffer);
+          console.log(`Word report written to ${outPath}`);
         }
 
         const failOn = (opts.failOn ?? "fail") as Severity;
@@ -109,13 +130,14 @@ function printHuman(
 
   for (const page of pages) {
     const visualIssues = page.visuals.flatMap((v) =>
-      v.issues.map((issue) => ({ issue, visualName: v.visual.displayName || v.visual.type })),
+      v.issues.map((issue) => ({ issue, visualName: describeVisual(v.visual) })),
     );
     const pageLevel = page.issues.map((issue) => ({ issue, visualName: null as string | null }));
     const all = [...pageLevel, ...visualIssues];
     if (all.length === 0) continue;
 
-    console.log(`${page.page.displayName}`);
+    const hiddenNote = page.page.hidden ? "  (hidden / drillthrough page)" : "";
+    console.log(`${page.page.displayName}${hiddenNote}`);
     for (const { issue, visualName } of all) {
       const location = visualName ? ` (${visualName})` : "";
       console.log(`  ${severityIcon(issue.severity)} [${issue.category}]${location} ${issue.title}`);

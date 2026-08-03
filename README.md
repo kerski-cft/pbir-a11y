@@ -107,9 +107,27 @@ pbir-a11y check ./MyReport --json
 # Exit 0 unless something above "warn" is found (default: fail)
 pbir-a11y check ./MyReport --fail-on warn
 
+# Also check pages marked hidden-in-view-mode (drillthrough/tooltip pages),
+# which are skipped by default since end users don't land on them directly
+pbir-a11y check ./MyReport --include-hidden
+
+# Write a formatted Word document of the findings, e.g. to hand to a client
+# or stakeholder alongside (or instead of) the terminal output
+pbir-a11y check ./MyReport --docx ./audit-findings.docx
+
 # What does a given check actually look for?
 pbir-a11y explain tabOrder
 pbir-a11y explain          # lists all categories
+```
+
+**A note on console output:** `check` prints every issue it finds, with no
+truncation or pagination on the tool's side  -  but a narrow or short terminal
+window can still scroll earlier findings out of view before you get a chance
+to read them. If you're not sure you're seeing the full list, either widen/
+maximise the terminal first, or redirect to a file so nothing is lost:
+
+```bash
+pbir-a11y check ./MyReport --json > results.json
 ```
 
 Exit code is `0` when nothing at or above `--fail-on` severity is found, `1`

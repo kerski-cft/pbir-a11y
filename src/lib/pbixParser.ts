@@ -329,7 +329,13 @@ function extractTabOrderState(...sources: any[]): { tabOrderIndex: number | null
   for (const source of sources) {
     if (source == null) continue;
     if (typeof source === "number") {
-      if (source < 0) return { tabOrderIndex: null, isHiddenFromTabOrder: true };
+      // Only the documented legacy sentinel (-1) means "explicitly hidden
+      // from tab order". Modern PBIR position.tabOrder can legitimately hold
+      // large or unusual values (e.g. a shape inserted before any manual
+      // reordering can carry a large negative default) that are still real,
+      // active positions in the tab sequence  -  they must not be silently
+      // treated as hidden, or decorative-but-focusable elements go undetected.
+      if (source === -1) return { tabOrderIndex: null, isHiddenFromTabOrder: true };
       return { tabOrderIndex: Math.round(source), isHiddenFromTabOrder: false };
     }
     if (typeof source === "string") {
@@ -339,12 +345,12 @@ function extractTabOrderState(...sources: any[]): { tabOrderIndex: number | null
       }
       const parsed = Number(value);
       if (Number.isFinite(parsed)) {
-        if (parsed < 0) return { tabOrderIndex: null, isHiddenFromTabOrder: true };
+        if (parsed === -1) return { tabOrderIndex: null, isHiddenFromTabOrder: true };
         return { tabOrderIndex: Math.round(parsed), isHiddenFromTabOrder: false };
       }
       const cleaned = Number(value.replace(/[^\d.\-]/g, ""));
       if (Number.isFinite(cleaned)) {
-        if (cleaned < 0) return { tabOrderIndex: null, isHiddenFromTabOrder: true };
+        if (cleaned === -1) return { tabOrderIndex: null, isHiddenFromTabOrder: true };
         return { tabOrderIndex: Math.round(cleaned), isHiddenFromTabOrder: false };
       }
     }
@@ -788,7 +794,12 @@ export async function parsePbix(file: File): Promise<ParsedReport> {
 /** Build a ParsedReport from an already-parsed Power BI layout object.
  *  Shared by the PBIX parser (Report/Layout) and the PBIR parser (legacy
  *  Layout file or synthesised from split-file PBIR projects). */
-export function buildReportFromLayout(layout: any, fileName: string, fileSize: number): ParsedReport {
+export function buildReportFromLayout(
+  layout: any,
+  fileName: string,
+  fileSize: number,
+  opts?: { includeHidden?: boolean },
+): ParsedReport {
   const canvasW =
     Number(layout?.config ? expand(layout.config)?.settings?.canvasSize?.width : 0) ||
     Number(layout?.layoutOptimization === 0 ? 1280 : 0) ||
@@ -807,7 +818,7 @@ export function buildReportFromLayout(layout: any, fileName: string, fileSize: n
   const sections = layout.sections ?? [];
   const pages = sections
     .map((s: any) => extractPage(s, canvasW, canvasH))
-    .filter((p: ParsedPage) => !p.hidden);
+    .filter((p: ParsedPage) => opts?.includeHidden || !p.hidden);
 
   return {
     fileName,
