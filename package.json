@@ -1,8 +1,8 @@
 {
   "name": "pbir-a11y",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Accessibility checks for Power BI PBIP/PBIR projects, for use by humans and AI coding agents during development.",
-  "license": "PolyForm-Noncommercial-1.0.0",
+  "license": "PolyForm-Shield-1.0.0",
   "type": "commonjs",
   "bin": {
     "pbir-a11y": "./dist/cli.js"
