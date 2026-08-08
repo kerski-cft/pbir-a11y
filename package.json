@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "build": "tsc -p .",
+    "prepare": "tsc -p .",
     "dev": "ts-node src/cli.ts",
     "start": "node dist/cli.js"
   },
