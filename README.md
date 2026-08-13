@@ -54,6 +54,28 @@ Either way, the CLI itself (`pbir-a11y`) still needs to be installed and on
 `PATH` (see Install, above): the skill just tells the agent when and how to
 call it.
 
+### Accessible by default, not just audited at the end
+
+`pbir-a11y` is read-only, so on its own it can only tell you about problems
+after they exist — it can't build a report or write alt text. To get reports
+that are accessible *as you build them*, pair it with a report-authoring
+tool or skill (e.g. [`pbir.tools`](https://github.com/maxanatsko/pbir.tools),
+or a Power BI agentic-development plugin) and chain the two: the authoring
+tool makes a change, `pbir-a11y` checks it immediately, mechanical issues
+(contrast, missing titles, tab order, target size) get fixed and re-checked,
+and anything needing judgment (alt text content, design intent) gets
+surfaced to you instead of guessed at.
+
+The skill (`skills/pbir-a11y/SKILL.md`) already nudges an agent toward this
+loop when an authoring tool is also active in the session. If you want it
+spelled out explicitly and consistently for your project regardless of
+which agent or authoring tool you're using, copy the relevant block from
+[`examples/CLAUDE.md`](./examples/CLAUDE.md) into your PBIP project root —
+it includes both a generic version (for `pbir.tools` or similar) and a
+version specific to Microsoft's `powerbi-report-design` +
+`powerbi-report-authoring` skills from Skills for Fabric, which spells out
+a Design → Authoring → Check pipeline.
+
 > **Note on the marketplace install path:** this repo includes
 > `.claude-plugin/plugin.json` and `skills/pbir-a11y/SKILL.md`, which is
 > Anthropic's documented, required structure for a plugin. It does **not**
@@ -112,8 +134,15 @@ pbir-a11y check ./MyReport --fail-on warn
 pbir-a11y check ./MyReport --include-hidden
 
 # Write a formatted Word document of the findings, e.g. to hand to a client
-# or stakeholder alongside (or instead of) the terminal output
+# or stakeholder alongside (or instead of) the terminal output. This uses the
+# bundled templates/audit-template.docx (cover page, Document Information
+# section, house style) rather than a generic generated layout.
 pbir-a11y check ./MyReport --docx ./audit-findings.docx
+
+# Put a client/customer name on the docx cover page. If omitted, the
+# template's own "Customer Name" placeholder is left in place so it can
+# still be filled in by hand in Word.
+pbir-a11y check ./MyReport --docx ./audit-findings.docx --client "Acme Corp"
 
 # What does a given check actually look for?
 pbir-a11y explain tabOrder
@@ -158,6 +187,11 @@ packaging):
 - **`src/commands/explain.ts`**: static per-category documentation
   (what it checks, which WCAG criterion), independent of any report, so an
   agent can look up a rule without needing a project on hand.
+- **`src/lib/templateDocxReport.ts`** + **`templates/audit-template.docx`**:
+  `--docx` fills the bundled Word template in place (edits `word/document.xml`
+  directly via `jszip`) rather than generating a document from scratch, so
+  the output keeps the template's real cover page, header/footer, and house
+  style.
 
 The five original `.tsx` React components (`GuestAudit`, `Results`, etc.)
 were not ported: they're browser UI for pbiaudits.com and have no
