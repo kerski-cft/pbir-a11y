@@ -1,12 +1,13 @@
 ---
 name: pbir-a11y
-description: Use this skill whenever creating, editing, or reviewing a Power BI PBIP/PBIR project's report definition — files under a `*.Report/definition/` folder, including `report.json`, `pages/*/page.json`, and `pages/*/visuals/*/visual.json`. Trigger after adding or modifying a visual, page, or theme in a PBIP project, or when the user asks about Power BI accessibility, WCAG compliance, alt text, contrast, tab order, or target size for a report. Also trigger when the user mentions 'pbir-a11y', 'accessibility check', or 'a11y' in the context of a Power BI project. Run the check after edits, not just when explicitly asked — accessibility issues introduced during editing (missing alt text on a new visual, a title toggled off, a duplicate tab order) are cheapest to catch immediately. Do NOT use this for general PBIR editing, formatting, or publishing — use pbir.tools or the Power BI agentic development skills for that; this skill only checks accessibility, it does not modify report files.
+description: Use when creating, editing, or reviewing a Power BI PBIP/PBIR report definition (report.json, page.json, visual.json), or when asked about Power BI accessibility, WCAG, alt text, contrast, tab order, or target size. Do not use for general PBIR editing; use pbir.tools for that.
 ---
 
 # Power BI PBIR accessibility checks
 
-`pbir-a11y` is a CLI that runs the same rule engine as the [PBIX A11y](https://pbiaudits.com) browser tool against a PBIP project folder on disk. It is read-only: it reports issues, it does not modify the project. Pair it with `pbir.tools` (or equivalent) for making the actual edits.
+Run this after adding or modifying a visual, page, or theme, and whenever the user mentions "pbir-a11y", "accessibility check", or "a11y" in a Power BI context — accessibility issues introduced during editing (missing alt text on a new visual, a title toggled off, a duplicate tab order) are cheapest to catch immediately, so run the check after edits rather than only when explicitly asked.
 
+`pbir-a11y` is a CLI that runs the same rule engine as the [PBIX A11y](https://pbiaudits.com) browser tool against a PBIP project folder on disk...
 ## When to run it
 
 - After adding a new visual, page, or changing a report theme
