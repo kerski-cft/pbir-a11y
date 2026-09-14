@@ -17,6 +17,47 @@ assumption that overrides the vision document.
 
 @ai/typescript-guide.md
 
+## Workflow Commands
+
+Adapted from the [AIDD Framework](https://github.com/paralleldrive/aidd)
+(MIT License), scoped down to what's actually installed in this repo. All
+of them defer to the `aidd-please` skill for shared assistant constraints
+(depth control, one-thing-at-a-time, don't edit files unless asked).
+
+- `/help` — lists these commands.
+- `/plan` — reviews [`plan.md`](./plan.md) (current priorities/next steps —
+  distinct from the fixed `vision.md`) and suggests next steps.
+- `/discover` — uses the `aidd-product-manager` skill to turn a rough idea
+  into a scoped user journey/story/feature, saved under `plan/story-map/`.
+- `/task`, `/execute` — the `aidd-task-creator` skill plans and executes
+  epics (stored in `tasks/`), using the `aidd-tdd` skill's TDD process
+  (adapted for this repo's `node --test`-based `npm test`) when implementing.
+- `/aidd-fix` — the disciplined bug-fix loop (failing test → minimal fix →
+  `/review` → `/commit`; never auto-pushes — see the `aidd-fix` skill).
+- `/review` — the `aidd-review` skill, trimmed to the checks that apply here
+  (TypeScript quality, test coverage, OWASP top 10, hotspot cross-reference,
+  `vision.md` alignment) — upstream also references React/Redux/Lit/JWT
+  skills that aren't installed.
+- `/log` — the `aidd-log` skill appends completed epics to
+  [`activity-log.md`](./activity-log.md).
+- `/commit` — conventional-commit template. Never pushes automatically.
+- `/aidd-churn` — the `aidd-churn` skill ranks files by hotspot score via
+  `npx aidd churn` (the `aidd` npm package is a devDependency here
+  specifically for this).
+- `/user-test` — the `aidd-user-testing` skill, rewired from upstream's
+  browser/screenshot testing to CLI-driven test scripts (scripted
+  `pbir-a11y` invocations against fixture projects), since this repo has no
+  UI. `/run-test` (execute in a real browser) was dropped for the same
+  reason.
+- `/aidd-upskill` — the `aidd-upskill` skill for authoring new
+  `.claude/skills/aidd-*` skills for this repo.
+
+Deliberately not installed: the multi-agent orchestrator and domain skills
+for React/Redux/Lit/ECS/JWT/etc. (not applicable to this Node CLI), and
+`/aidd-riteway-ai` (would need the separate `riteway` CLI; this repo tests
+with `node --test` instead). See `vision.md` before assuming a command
+exists beyond this list.
+
 ## Related, Already-Existing Artifacts
 
 Don't duplicate these — they already cover their own scope:
