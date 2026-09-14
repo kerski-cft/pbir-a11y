@@ -55,13 +55,26 @@ The repo also ships as a Claude Code plugin (`.claude-plugin/plugin.json` +
   intentionally unchanged from the original PBIX A11y browser tool except for
   the documented `pbirParser.ts` split (see `README.md` → "What's ported vs.
   new"). Don't refactor this code opportunistically — faithfulness to the
-  original rule engine is the point, not idiomatic-TypeScript purity.
+  original rule engine is the point, not idiomatic-TypeScript purity. This
+  carve-out also exempts `src/lib/*` from the linting and file-size standards
+  below; those apply to new/non-ported code.
 - [PolyForm Shield 1.0.0](./LICENSE) license: personal/commercial internal use
   and contributions are fine; building a competing product/service on this
   code is not.
-- No linter or formatter (`.eslintrc`, `.prettierrc`, `biome.json`, etc.) is
-  configured yet — style is enforced by convention and review, not tooling.
+- All new/non-ported TypeScript must pass a configured linter
+  (`eslint.config.js`) — style is enforced by tooling, not just convention
+  and review.
+- Every rule check exposed by `rulesEngine.ts` (each `Category` value:
+  `altText`, `visualTitles`, `axisTitles`, `fontScaling`, `contrast`,
+  `colourblind`, `pageTitles`, `tabOrder`, `targetSize`, `clutter`) must have
+  direct test coverage in `test-files/`. A coverage tool reports this as a
+  concise, per-file summary (pass/fail against a threshold) — not a verbose
+  line-by-line dump — so it stays cheap to read in CI output or by an agent.
 - Tests run via Node's built-in `--test` runner, not Jest/Vitest.
+- New/non-ported TypeScript files should stay roughly 500-800 lines. This
+  keeps files easier to read in one pass and cheaper for an agent to load
+  into context; when a new file would exceed this, split it by feature
+  rather than growing it further. Doesn't apply retroactively to `src/lib/*`.
 - Runtime dependencies are intentionally minimal: `commander`, `docx`, `jszip`.
 
 ## Architectural Decisions
@@ -96,3 +109,9 @@ The repo also ships as a Claude Code plugin (`.claude-plugin/plugin.json` +
   make it usable as an unattended CI gate.
 - An agent working in a PBIP project picks up and runs the right check from
   `skills/pbir-a11y/SKILL.md`'s description alone, without being told to.
+- `npm run lint` passes with zero errors on all new/non-ported TypeScript.
+- Every `Category` in `rulesEngine.ts` has at least one test in
+  `test-files/` exercising it, visible as a passing line in the coverage
+  report's summary.
+- New/non-ported `.ts` files stay within the ~500-800 line guideline (checked
+  by convention/review today; see `plan.md` for any tooling to enforce it).

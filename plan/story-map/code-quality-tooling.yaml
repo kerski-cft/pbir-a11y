@@ -1,0 +1,87 @@
+id: jr5q8mzq1vwbh0a2c9dfeg7m
+name: Code Quality Tooling
+description: >
+  Give pbir-a11y's own codebase the same rigor it demands of the reports
+  it audits: lint enforcement, full rule-check test coverage, and a
+  file-size guideline for new/non-ported TypeScript (see vision.md ->
+  Key Constraints and Success Criteria, added 2026-09-14). Corresponds
+  to the three new epics appended to plan.md's Current Priorities.
+personas:
+  - psn7xk3mzq1vwbh0a2c9dfeg
+createdAt: 1789401107439
+updatedAt: 1789401107439
+steps:
+  - id: st1p8mzq1vwbh0a2c9dfeg7k
+    name: Lint gate for new TypeScript
+    description: >
+      Add a configured linter for new/non-ported TypeScript so style and
+      bug-prone patterns are caught by tooling instead of relying on
+      manual review. Scoped per discovery on 2026-09-14: npm-script-only
+      gate (no CI workflow or git hook yet), typescript-eslint
+      "recommended" rule set, lint-only (no Prettier/formatter bundled
+      in).
+    createdAt: 1789401107439
+    updatedAt: 1789401107439
+    userStories:
+      - id: us9k2mzq1vwbh0a2c9dfeg7h
+        name: Automatic lint enforcement for new code
+        description: >
+          As a pbir-a11y maintainer, I want new TypeScript to be linted
+          automatically, so that style/bug-prone patterns are caught
+          before merge instead of relying on manual review alone.
+        painPoint:
+          id: pp3h8mzq1vwbh0a2c9dfeg7x
+          name: Inconsistent style/bug-prone patterns slip through review
+          description: >
+            Without a configured linter, style and bug-prone patterns
+            (unused vars, floating promises, etc.) are caught only by
+            manual review, if at all, making reviews slower and letting
+            real bugs through.
+          impact: 6
+          frequency: 8
+          createdAt: 1789401107439
+          updatedAt: 1789401107439
+        priority: 48
+        functionalRequirements:
+          - Given a file in src/commands/, src/io/, src/cli.ts, or
+            test-files/ with a typescript-eslint "recommended"
+            violation, running `npm run lint` should report it with
+            file/line and exit non-zero.
+          - Given src/lib/* (the ported rule engine), running
+            `npm run lint` should not fail on its pre-existing patterns
+            — the vision.md carve-out for ported code applies.
+          - Given no violations, running `npm run lint` should exit 0
+            with no errors.
+          - Given the codebase as it exists today, the first `npm run
+            lint` run may surface existing violations in
+            src/commands/, src/io/, src/cli.ts, and test-files/; this
+            story isn't done until those are fixed (zero errors at
+            handoff).
+        mockups: []
+        status:
+          state: released
+          comment: >
+            Completed 2026-09-14 via tasks/archive/2026-09-14-lint-gate-for-new-typescript.md.
+            ESLint + typescript-eslint recommended via `npm run lint`,
+            scoped to non-ported code; fixed the one pre-existing
+            violation in check.ts.
+        createdAt: 1789401107439
+        updatedAt: 1789401107439
+  - id: st2q9nzr2wxci1b3d0egfh8l
+    name: Full rule-check test coverage + coverage report
+    description: >
+      Cover every rulesEngine.ts Category with tests in test-files/, and
+      add a coverage tool reporting a concise per-file summary. Not yet
+      discovered in detail — parked from plan.md's second new epic.
+    createdAt: 1789401107439
+    updatedAt: 1789401107439
+    userStories: []
+  - id: st3r0osz3xydj2c4e1fhgi9m
+    name: File-size guideline tooling
+    description: >
+      A lightweight check flagging new/non-src/lib TypeScript files over
+      ~800 lines. Not yet discovered in detail — parked from plan.md's
+      third new epic.
+    createdAt: 1789401107439
+    updatedAt: 1789401107439
+    userStories: []

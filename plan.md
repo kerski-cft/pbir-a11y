@@ -33,6 +33,24 @@ PBIP/PBIR-first primary workflow (see `vision.md` Non-Goals).
 `skills/pbir-a11y/SKILL.md`). Explore whether content-quality heuristics
 belong in the automated check or stay guidance-only for agents fixing issues.
 
+### 📋 Full rule-check test coverage + coverage report
+
+**Status**: 📋 IDEA
+**Goal**: Only `altText` (and `groupNaming`, an `altText` sub-case) have
+tests today; `visualTitles`, `axisTitles`, `fontScaling`, `contrast`,
+`colourblind`, `pageTitles`, `tabOrder`, `targetSize`, and `clutter` don't.
+Add `test-files/` coverage for each remaining `Category`, and add a coverage
+tool to the test run that reports a concise per-file summary (not verbose
+line-by-line output) so it stays cheap to read in CI or by an agent.
+
+### 📋 File-size guideline tooling
+
+**Status**: 📋 IDEA
+**Goal**: `vision.md` now asks new/non-ported `.ts` files to stay ~500-800
+lines. Today that's convention-only; add a lightweight check (a script, or
+extend `npx aidd churn`'s output) that flags new/non-`src/lib` files over
+800 lines so the guideline doesn't silently erode as the repo grows.
+
 ---
 
 _Add new items here as they're identified (`/discover` can help turn a rough
@@ -40,3 +58,9 @@ idea into a scoped entry); move an item to "Done" with a one-line outcome
 note once it ships, rather than deleting it._
 
 ## Done
+
+- **Lint gate for new TypeScript** (2026-09-14): ESLint +
+  `typescript-eslint` recommended rules via `npm run lint`, scoped to
+  new/non-ported code (`src/lib/*` exempt); fixed the one pre-existing
+  violation in `check.ts`. See
+  [`tasks/archive/2026-09-14-lint-gate-for-new-typescript.md`](./tasks/archive/2026-09-14-lint-gate-for-new-typescript.md).
