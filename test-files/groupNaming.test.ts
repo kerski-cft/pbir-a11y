@@ -1,21 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import path from "node:path";
-import { loadPbirFromFolder } from "../src/io/loadFromFolder";
-import { analyze, ALL_CHECKS, type Issue } from "../src/lib/rulesEngine";
+import { analyzeFixture, visualIssuesByCategory } from "./testHelpers";
 
-const FIXTURE = path.join(__dirname, "thin-report", "ThinReport.Report");
-
-async function visualTitleIssuesById(): Promise<Map<string, Issue[]>> {
-  const { report } = await loadPbirFromFolder(FIXTURE);
-  const result = analyze(report, ALL_CHECKS);
-  const byId = new Map<string, Issue[]>();
-  for (const page of result.pages) {
-    for (const visual of page.visuals) {
-      byId.set(visual.visual.id, visual.issues.filter((i) => i.category === "visualTitles"));
-    }
-  }
-  return byId;
+async function visualTitleIssuesById() {
+  return visualIssuesByCategory(await analyzeFixture(), "visualTitles");
 }
 
 test("a visual group with a real author-given name is not flagged", async () => {

@@ -1,21 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import path from "node:path";
-import { loadPbirFromFolder } from "../src/io/loadFromFolder";
-import { analyze, ALL_CHECKS, type Issue } from "../src/lib/rulesEngine";
+import { analyzeFixture, visualIssuesByCategory } from "./testHelpers";
+import type { Issue } from "../src/lib/rulesEngine";
 
-const FIXTURE = path.join(__dirname, "thin-report", "ThinReport.Report");
-
-async function issuesById(category: Issue["category"]): Promise<Map<string, Issue[]>> {
-  const { report } = await loadPbirFromFolder(FIXTURE);
-  const result = analyze(report, ALL_CHECKS);
-  const byId = new Map<string, Issue[]>();
-  for (const page of result.pages) {
-    for (const visual of page.visuals) {
-      byId.set(visual.visual.id, visual.issues.filter((i) => i.category === category));
-    }
-  }
-  return byId;
+async function issuesById(category: Issue["category"]) {
+  return visualIssuesByCategory(await analyzeFixture(), category);
 }
 
 test("a visual with a font below the page's minimum is flagged for fontScaling", async () => {
