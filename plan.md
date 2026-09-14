@@ -59,3 +59,10 @@ note once it ships, rather than deleting it._
   `eslint.config.js`, reusing the lint-gate epic's file scope and
   `src/lib/*` exemption — no new dependency or script needed. See
   [`tasks/archive/2026-09-14-file-size-guideline-tooling.md`](./tasks/archive/2026-09-14-file-size-guideline-tooling.md).
+- **`/release` command** (2026-09-14): a new `aidd-release` skill
+  proposes a version bump (inferred from conventional-commit types since
+  the last version-bump commit, via deterministic
+  `.claude/skills/aidd-release/scripts/`), confirms it, then updates
+  `package.json`, commits, and tags — replacing the ad hoc manual edits
+  that caused the CLI `--version` bug. See
+  [`tasks/archive/2026-09-14-release-command.md`](./tasks/archive/2026-09-14-release-command.md).

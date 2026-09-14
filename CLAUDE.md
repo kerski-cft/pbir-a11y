@@ -41,6 +41,10 @@ of them defer to the `aidd-please` skill for shared assistant constraints
 - `/log` — the `aidd-log` skill appends completed epics to
   [`activity-log.md`](./activity-log.md).
 - `/commit` — conventional-commit template. Never pushes automatically.
+- `/release` — the `aidd-release` skill proposes a version bump (inferred
+  from conventional-commit types since the last version-bump commit, via
+  `.claude/skills/aidd-release/scripts/`), confirms it with you, then
+  updates `package.json`, commits, and tags. Never pushes automatically.
 - `/aidd-churn` — the `aidd-churn` skill ranks files by hotspot score via
   `npx aidd churn` (the `aidd` npm package is a devDependency here
   specifically for this).
