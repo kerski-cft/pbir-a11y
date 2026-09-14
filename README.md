@@ -197,6 +197,25 @@ The five original `.tsx` React components (`GuestAudit`, `Results`, etc.)
 were not ported: they're browser UI for pbiaudits.com and have no
 equivalent in a CLI; the CLI's `check` command replaces their role.
 
+## Development
+
+Working on `pbir-a11y` itself (not just using it)? See
+[`vision.md`](./vision.md) and [`CLAUDE.md`](./CLAUDE.md) first for this
+repo's goals, constraints, and conventions. Day-to-day commands:
+
+```bash
+npm run build      # Compile TypeScript to dist/
+npm run dev -- <args>  # Run the CLI straight from source via ts-node, e.g.:
+                        #   npm run dev -- check test-files/thin-report
+npm test           # Run the test suite (node --test)
+npm run lint       # ESLint (new/non-ported code only; src/lib/* is exempt)
+npm run coverage   # Test run with a line-coverage gate, scoped to src/lib/**
+```
+
+`src/lib/*` is the intentionally-unchanged ported rule engine (see
+`vision.md` → Key Constraints) — `lint` and the file-size guideline don't
+apply to it, and it's excluded from the `coverage` gate's scope.
+
 ## Roadmap ideas
 
 - `pbir-a11y fix`: auto-correct the deterministic issues (bump undersized
