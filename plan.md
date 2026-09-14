@@ -33,14 +33,16 @@ PBIP/PBIR-first primary workflow (see `vision.md` Non-Goals).
 `skills/pbir-a11y/SKILL.md`). Explore whether content-quality heuristics
 belong in the automated check or stay guidance-only for agents fixing issues.
 
-### 📋 Full rule-check test coverage + coverage report
+### 🚧 Full rule-check test coverage + coverage report
 
-**Status**: 📋 IDEA
+**Status**: 🚧 IN PROGRESS — see
+[`tasks/full-rule-check-test-coverage.md`](./tasks/full-rule-check-test-coverage.md)
 **Goal**: Only `altText` (and `groupNaming`, an `altText` sub-case) have
 tests today; `visualTitles`, `axisTitles`, `fontScaling`, `contrast`,
 `colourblind`, `pageTitles`, `tabOrder`, `targetSize`, and `clutter` don't.
-Add `test-files/` coverage for each remaining `Category`, and add a coverage
-tool to the test run that reports a concise per-file summary (not verbose
+Add `test-files/` coverage for each remaining `Category` (each with both a
+flagged and a compliant/false-positive-guard case), and add a coverage tool
+to the test run that reports a concise per-file summary (not verbose
 line-by-line output) so it stays cheap to read in CI or by an agent.
 
 ### 📋 File-size guideline tooling

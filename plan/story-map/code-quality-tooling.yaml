@@ -71,11 +71,62 @@ steps:
     name: Full rule-check test coverage + coverage report
     description: >
       Cover every rulesEngine.ts Category with tests in test-files/, and
-      add a coverage tool reporting a concise per-file summary. Not yet
-      discovered in detail — parked from plan.md's second new epic.
+      add a coverage tool reporting a concise per-file summary.
     createdAt: 1789401107439
-    updatedAt: 1789401107439
-    userStories: []
+    updatedAt: 1789403154581
+    userStories:
+      - id: us4t1pav4yzek3d5f2ghij0n
+        name: Direct test coverage for every rule-check category
+        description: >
+          As a pbir-a11y maintainer, I want every automated rule-check
+          category to have direct test coverage and a coverage-threshold
+          gate, so that a change to rulesEngine.ts can't silently break a
+          rule's behavior without a failing test.
+        painPoint:
+          id: pp5u2qbw5zafl4e6g3hijk1o
+          name: An untested rule-check category could silently regress
+          description: >
+            Only altText (and its groupNaming sub-case) have direct
+            tests today; the other 8 categories (visualTitles,
+            axisTitles, fontScaling, contrast, colourblind, pageTitles,
+            tabOrder, targetSize, clutter) have none, so a change could
+            break one without any test failing — undermining vision.md's
+            core parity-with-the-original-tool promise.
+          impact: 9
+          frequency: 5
+          createdAt: 1789403154581
+          updatedAt: 1789403154581
+        priority: 45
+        functionalRequirements:
+          - Given each of visualTitles, axisTitles, fontScaling,
+            contrast, pageTitles, tabOrder, targetSize, and clutter,
+            should have at least one test-files/ test exercising a
+            flagged case AND at least one exercising a compliant case
+            that must NOT be flagged (false-positive guard), via
+            analyze() against the thin-report fixture.
+          - Given colourblind (whose analyze()-level emission is
+            commented out — it's a UI-simulator toggle, not an automated
+            rule), should have a direct unit test of
+            colourblindUtils.findCollisions() instead.
+          - Given `npm run coverage`, should run node --test
+            --experimental-test-coverage scoped to src/lib/**, report a
+            concise per-file summary, and exit non-zero below the
+            threshold gate.
+          - Given the coverage gate's threshold, should be set at
+            approximately today's baseline (~65% lines on src/lib/**) so
+            it locks in current coverage as a floor without demanding an
+            immediate leap.
+        mockups: []
+        status:
+          state: inProgress
+          comment: >
+            Discovery complete 2026-09-14 (scope confirmed: Node's
+            built-in --experimental-test-coverage, src/lib/** scope,
+            threshold near baseline, separate npm run coverage script,
+            colourblind tested at the colourblindUtils.ts unit level).
+            Moving to /task for implementation planning.
+        createdAt: 1789403154581
+        updatedAt: 1789403154581
   - id: st3r0osz3xydj2c4e1fhgi9m
     name: File-size guideline tooling
     description: >

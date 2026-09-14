@@ -70,6 +70,11 @@ The repo also ships as a Claude Code plugin (`.claude-plugin/plugin.json` +
   direct test coverage in `test-files/`. A coverage tool reports this as a
   concise, per-file summary (pass/fail against a threshold) — not a verbose
   line-by-line dump — so it stays cheap to read in CI output or by an agent.
+- Each rule check's tests must cover false positives, not just true
+  positives: a test asserting the violating case is flagged is not enough
+  on its own — pair it with a test asserting a compliant/valid case is
+  *not* flagged. A rule that cries wolf on good reports is as harmful to
+  `pbir-a11y`'s credibility as one that misses real issues.
 - Tests run via Node's built-in `--test` runner, not Jest/Vitest.
 - New/non-ported TypeScript files should stay roughly 500-800 lines. This
   keeps files easier to read in one pass and cheaper for an agent to load
@@ -112,6 +117,8 @@ The repo also ships as a Claude Code plugin (`.claude-plugin/plugin.json` +
 - `npm run lint` passes with zero errors on all new/non-ported TypeScript.
 - Every `Category` in `rulesEngine.ts` has at least one test in
   `test-files/` exercising it, visible as a passing line in the coverage
-  report's summary.
+  report's summary — including at least one compliant-case test proving
+  the check does *not* flag valid content (a false-positive guard, not
+  just a true-positive one).
 - New/non-ported `.ts` files stay within the ~500-800 line guideline (checked
   by convention/review today; see `plan.md` for any tooling to enforce it).
