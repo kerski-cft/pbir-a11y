@@ -134,8 +134,48 @@ steps:
     name: File-size guideline tooling
     description: >
       A lightweight check flagging new/non-src/lib TypeScript files over
-      ~800 lines. Not yet discovered in detail — parked from plan.md's
-      third new epic.
+      ~800 lines.
     createdAt: 1789401107439
-    updatedAt: 1789401107439
-    userStories: []
+    updatedAt: 1789404249802
+    userStories:
+      - id: us5v2qbw6zafl4e6g3hijk2p
+        name: Enforce the 800-line file-size guideline via lint
+        description: >
+          As a pbir-a11y maintainer, I want new/non-ported TypeScript
+          files capped at 800 lines by the lint gate, so oversized files
+          get caught and split before they erode readability and
+          agent-context token efficiency.
+        painPoint:
+          id: pp6w3rcx7abgm5f7h4ijkl3q
+          name: A file could silently grow past a readable size unchecked
+          description: >
+            Nothing today catches a new/non-ported file quietly growing
+            well past vision.md's ~500-800 line guideline; it's
+            convention-only, so it can erode as the repo grows.
+          impact: 5
+          frequency: 6
+          createdAt: 1789404249802
+          updatedAt: 1789404249802
+        priority: 30
+        functionalRequirements:
+          - Given a new/non-ported .ts file (src/commands/**, src/io/**,
+            src/cli.ts, test-files/**) with more than 800 non-blank,
+            non-comment lines, npm run lint should report a max-lines
+            error and exit non-zero.
+          - Given src/lib/** (the ported engine), should remain exempt
+            regardless of length (already true via eslint.config.js's
+            existing ignores).
+          - Given the codebase as it exists today (all in-scope files
+            well under 800 lines), npm run lint should continue to pass
+            cleanly with no new violations.
+        mockups: []
+        status:
+          state: released
+          comment: >
+            Completed 2026-09-14 via
+            tasks/archive/2026-09-14-file-size-guideline-tooling.md.
+            ESLint's built-in max-lines rule (800-line hard threshold)
+            added to eslint.config.js, reusing the lint-gate epic's file
+            scope and src/lib/* exemption; no new dependency or script.
+        createdAt: 1789404249802
+        updatedAt: 1789404249802

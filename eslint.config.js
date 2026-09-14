@@ -8,5 +8,10 @@ module.exports = tseslint.config(
   {
     files: ["src/commands/**/*.ts", "src/io/**/*.ts", "src/cli.ts", "test-files/**/*.ts"],
     extends: [tseslint.configs.recommended],
+    rules: {
+      // vision.md: new/non-ported files should stay ~500-800 lines so they
+      // stay easy to read and cheap for an agent to load into context.
+      "max-lines": ["error", { max: 800, skipBlankLines: true, skipComments: true }],
+    },
   },
 );

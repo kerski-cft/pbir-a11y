@@ -33,14 +33,6 @@ PBIP/PBIR-first primary workflow (see `vision.md` Non-Goals).
 `skills/pbir-a11y/SKILL.md`). Explore whether content-quality heuristics
 belong in the automated check or stay guidance-only for agents fixing issues.
 
-### 📋 File-size guideline tooling
-
-**Status**: 📋 IDEA
-**Goal**: `vision.md` now asks new/non-ported `.ts` files to stay ~500-800
-lines. Today that's convention-only; add a lightweight check (a script, or
-extend `npx aidd churn`'s output) that flags new/non-`src/lib` files over
-800 lines so the guideline doesn't silently erode as the repo grows.
-
 ---
 
 _Add new items here as they're identified (`/discover` can help turn a rough
@@ -62,3 +54,8 @@ note once it ships, rather than deleting it._
   scoped to `src/lib/**`, 60% line gate — actual coverage rose from
   64.48% to 77.44%). See
   [`tasks/archive/2026-09-14-full-rule-check-test-coverage.md`](./tasks/archive/2026-09-14-full-rule-check-test-coverage.md).
+- **File-size guideline tooling** (2026-09-14): ESLint's built-in
+  `max-lines` rule (800-line hard threshold) added to the existing
+  `eslint.config.js`, reusing the lint-gate epic's file scope and
+  `src/lib/*` exemption — no new dependency or script needed. See
+  [`tasks/archive/2026-09-14-file-size-guideline-tooling.md`](./tasks/archive/2026-09-14-file-size-guideline-tooling.md).
