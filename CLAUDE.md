@@ -51,12 +51,37 @@ of them defer to the `aidd-please` skill for shared assistant constraints
   reason.
 - `/aidd-upskill` — the `aidd-upskill` skill for authoring new
   `.claude/skills/aidd-*` skills for this repo.
+- `aidd-agent-orchestrator` — routes a request to the right skill above; its
+  `Agents{}` map is rescoped to this repo's actual skill set (upstream's
+  routed to a NextJS/React/Redux/Shadcn stack this repo doesn't have).
+- `/aidd-pipeline` — runs a markdown task list step-by-step via subagents.
+- `/aidd-parallel` — generates `/aidd-fix` delegation prompts for a task list
+  and dispatches them to subagents in dependency order on a shared branch.
+- `/aidd-pr` — triages open PR review comments, resolves already-addressed
+  threads, and delegates remaining ones as `/aidd-fix` prompts (needs `gh`
+  authenticated).
+- `aidd-requirements` — writes `Given $situation, should $jobToDo` functional
+  requirements for a user story; complements `aidd-product-manager`.
+- `/aidd-rtc` — Reflective Thought Composition: a structured
+  restate→ideate→reflect→expand→score→respond thinking pipeline for
+  decisions where reasoning quality matters more than response speed.
+- `aidd-write` — prose writing/editing/scoring skill; useful for README,
+  docs, and the client-facing `--docx` report copy.
+- `aidd-timing-safe-compare` — security rule: hash-then-compare (SHA3-256)
+  instead of raw/timing-safe comparison for any secret or token check.
+- `aidd-sudolang-syntax` — cheat sheet for the SudoLang pseudocode syntax
+  these skill files are written in; reference only, not a command.
 
-Deliberately not installed: the multi-agent orchestrator and domain skills
-for React/Redux/Lit/ECS/JWT/etc. (not applicable to this Node CLI), and
-`/aidd-riteway-ai` (would need the separate `riteway` CLI; this repo tests
-with `node --test` instead). See `vision.md` before assuming a command
-exists beyond this list.
+Deliberately not installed: domain skills for React/Redux/Lit/ECS/JWT/
+Observe/NextJS-stack/etc. (not applicable to this Node CLI — no UI, no
+Adobe `@adobe/data` stack, no auth), `aidd-structure`/`aidd-namespace`
+(their layered components/plugins/services/types architecture is the same
+Adobe-stack pattern, not this repo's actual `src/lib`/`src/io`/`src/commands`
+layout — see `vision.md` → Architectural Decisions), `aidd-error-causes`
+(would require adding the `error-causes` runtime dependency, conflicting
+with `vision.md`'s minimal-dependency constraint), and `/aidd-riteway-ai`
+(would need the separate `riteway` CLI; this repo tests with `node --test`
+instead). See `vision.md` before assuming a command exists beyond this list.
 
 ## Related, Already-Existing Artifacts
 
