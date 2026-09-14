@@ -14,10 +14,12 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "ts-node src/cli.ts",
-    "start": "node dist/cli.js"
+    "start": "node dist/cli.js",
+    "test": "node --require ts-node/register --test test-files/**/*.test.ts"
   },
   "dependencies": {
     "commander": "^12.1.0",
+    "docx": "^9.6.1",
     "jszip": "^3.10.1"
   },
   "devDependencies": {

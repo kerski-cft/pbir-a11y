@@ -159,6 +159,7 @@ const FRIENDLY_TYPES: Record<string, string> = {
   ribbonChart: "Ribbon chart",
   waterfallChart: "Waterfall chart",
   qnaVisual: "Q&A",
+  visualGroup: "Visual group",
 };
 
 export function friendlyType(t: string): string {
@@ -175,8 +176,9 @@ export function friendlyType(t: string): string {
 // it isn't visible to authors in Power BI Desktop and adds noise.
 export function describeVisual(v: ParsedVisual): string {
   const type = friendlyType(v.type);
-  const title = v.titleText?.trim();
+  const title = (v.titleText || v.groupDisplayName)?.trim();
   if (title && title.length > 0) return `${type} "${title}"`;
+  if ((v.type ?? "").toLowerCase().trim() === "visualgroup") return `${type} (unnamed)`;
   const fields = (v.fields ?? []).slice(0, 3);
   if (fields.length > 0) {
     const more = (v.fields?.length ?? 0) > fields.length ? ` +${(v.fields!.length - fields.length)} more` : "";
@@ -191,11 +193,20 @@ function typeIs(v: ParsedVisual, ...patterns: string[]): boolean {
   return patterns.some((p) => t.includes(p));
 }
 
+// A visual-group container (a layout grouping of other visuals, no data of
+// its own). Power BI Desktop doesn't offer it an alt-text or title field, so
+// it's out of scope for both rules below - distinct from "pure decoration",
+// which is about shapes/images that happen to carry no content.
+function isVisualGroup(v: ParsedVisual): boolean {
+  return (v.type ?? "").toLowerCase().trim() === "visualgroup";
+}
+
 // "Pure decoration" = a shape/textbox/image visual with no text inside it.
 // These are visual scaffolding (dividers, background panels, decorative
 // images) and don't need alt text. As soon as a shape carries text, screen
 // reader users need an alt-text equivalent.
 function isPureDecoration(v: ParsedVisual): boolean {
+  if (isVisualGroup(v)) return true;
   const t = (v.type ?? "").toLowerCase().trim();
   if (!t) return true;
   if (new Set(["text", "label", "header", "background"]).has(t)) return !v.hasText;
@@ -210,7 +221,8 @@ function isPureDecoration(v: ParsedVisual): boolean {
 // DO need a visible title so users  -  and screen-reader users  -  know what
 // the control filters or the chart shows.
 function skipTitleCheck(v: ParsedVisual): boolean {
-  return typeIs(v, "shape", "textbox", "image", "button", "navigator")
+  return isVisualGroup(v)
+    || typeIs(v, "shape", "textbox", "image", "button", "navigator")
     || ["text", "label", "header", "background"].includes((v.type ?? "").toLowerCase().trim());
 }
 
@@ -315,6 +327,44 @@ function visualTitleRule(v: ParsedVisual): Issue | null {
       detail: `${describeVisual(v)} has no title text. Slicers and cards don't auto-generate one, so nothing is shown.`,
       why: "Without a written title, sighted users have no label and screen readers announce nothing for the visual.",
       fix: "Format pane → Title → toggle On and type a short, specific title (for slicers, name the field being filtered).",
+      visualId: v.id,
+    };
+  }
+  return null;
+}
+
+// Power BI's "Group" action names a new group "Group", then "Group 1",
+// "Group 2", ... A group left with that default name (or no name at all)
+// gives a screen-reader user navigating the Selection pane nothing to go on
+// - unlike a chart, a group has no bound fields to fall back on describing
+// itself. Scoped to visualGroup only; skipTitleCheck already keeps this out
+// of visualTitleRule's path so the two never double-report the same visual.
+const DEFAULT_GROUP_NAME = /^group\s*\d*$/i;
+
+function visualGroupNameRule(v: ParsedVisual): Issue | null {
+  if (!isVisualGroup(v)) return null;
+  const name = v.groupDisplayName?.trim();
+  if (!name) {
+    return {
+      id: `${v.id}-group-name-missing`,
+      category: "visualTitles",
+      severity: "warn",
+      title: "Group has no name",
+      detail: `${describeVisual(v)} has no display name.`,
+      why: "Screen reader users navigating the Selection pane rely on a group's name to know what it contains.",
+      fix: "Selection pane → double-click the group → give it a short, specific name describing its contents.",
+      visualId: v.id,
+    };
+  }
+  if (DEFAULT_GROUP_NAME.test(name)) {
+    return {
+      id: `${v.id}-group-name-default`,
+      category: "visualTitles",
+      severity: "warn",
+      title: "Group uses default name",
+      detail: `${describeVisual(v)} still has Power BI's default group name.`,
+      why: `A name like "${name}" tells screen reader users nothing about what the group contains.`,
+      fix: 'Selection pane → double-click the group → rename it to describe its contents (e.g. "Regional KPIs").',
       visualId: v.id,
     };
   }
@@ -825,6 +875,8 @@ export function analyze(report: ParsedReport, selection: CheckSelection = ALL_CH
       if (selection.visualTitles) {
         const title = visualTitleRule(v);
         if (title) issues.push(title);
+        const groupName = visualGroupNameRule(v);
+        if (groupName) issues.push(groupName);
       }
       if (selection.axisTitles) {
         issues.push(...axisTitleRule(v));
