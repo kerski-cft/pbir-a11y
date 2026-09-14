@@ -33,18 +33,6 @@ PBIP/PBIR-first primary workflow (see `vision.md` Non-Goals).
 `skills/pbir-a11y/SKILL.md`). Explore whether content-quality heuristics
 belong in the automated check or stay guidance-only for agents fixing issues.
 
-### 🚧 Full rule-check test coverage + coverage report
-
-**Status**: 🚧 IN PROGRESS — see
-[`tasks/full-rule-check-test-coverage.md`](./tasks/full-rule-check-test-coverage.md)
-**Goal**: Only `altText` (and `groupNaming`, an `altText` sub-case) have
-tests today; `visualTitles`, `axisTitles`, `fontScaling`, `contrast`,
-`colourblind`, `pageTitles`, `tabOrder`, `targetSize`, and `clutter` don't.
-Add `test-files/` coverage for each remaining `Category` (each with both a
-flagged and a compliant/false-positive-guard case), and add a coverage tool
-to the test run that reports a concise per-file summary (not verbose
-line-by-line output) so it stays cheap to read in CI or by an agent.
-
 ### 📋 File-size guideline tooling
 
 **Status**: 📋 IDEA
@@ -66,3 +54,11 @@ note once it ships, rather than deleting it._
   new/non-ported code (`src/lib/*` exempt); fixed the one pre-existing
   violation in `check.ts`. See
   [`tasks/archive/2026-09-14-lint-gate-for-new-typescript.md`](./tasks/archive/2026-09-14-lint-gate-for-new-typescript.md).
+- **Full rule-check test coverage + coverage report** (2026-09-14): all 9
+  automated `rulesEngine.ts` categories (plus `colourblind` at the
+  `colourblindUtils.ts` level, since `analyze()` never emits it) now have
+  both a flagged and a compliant/false-positive-guard test; added
+  `npm run coverage` (Node's built-in `--experimental-test-coverage`,
+  scoped to `src/lib/**`, 60% line gate — actual coverage rose from
+  64.48% to 77.44%). See
+  [`tasks/archive/2026-09-14-full-rule-check-test-coverage.md`](./tasks/archive/2026-09-14-full-rule-check-test-coverage.md).

@@ -118,13 +118,16 @@ steps:
             immediate leap.
         mockups: []
         status:
-          state: inProgress
+          state: released
           comment: >
-            Discovery complete 2026-09-14 (scope confirmed: Node's
-            built-in --experimental-test-coverage, src/lib/** scope,
-            threshold near baseline, separate npm run coverage script,
-            colourblind tested at the colourblindUtils.ts unit level).
-            Moving to /task for implementation planning.
+            Completed 2026-09-14 via
+            tasks/archive/2026-09-14-full-rule-check-test-coverage.md. All
+            9 categories (plus colourblind at the util level) have
+            flagged + compliant tests; npm run coverage gate added at
+            60% lines on src/lib/**; actual coverage rose 64.48% ->
+            77.44%. Also extracted test-files/testHelpers.ts to remove
+            duplicated fixture-loading boilerplate across all 6 test
+            files.
         createdAt: 1789403154581
         updatedAt: 1789403154581
   - id: st3r0osz3xydj2c4e1fhgi9m

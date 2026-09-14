@@ -1,6 +1,6 @@
 # Full Rule-Check Test Coverage Epic
 
-**Status**: 📋 PLANNED
+**Status**: ✅ COMPLETED (2026-09-14)
 **Goal**: Give every automated rule-check category in `rulesEngine.ts`
 direct test coverage, gated by a coverage-threshold check.
 
