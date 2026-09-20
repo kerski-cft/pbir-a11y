@@ -23,6 +23,27 @@ test("a group's missing-alt-text fix message asks for an item count with no lite
   assert.doesNotMatch(issue.fix, /measure/i);
 });
 
+test("a group left with a placeholder alt text value is flagged as placeholder", async () => {
+  const issues = await altTextIssuesById();
+  const groupIssues = issues.get("groupDefaultName") ?? [];
+  assert.equal(groupIssues.length, 1);
+  assert.equal(groupIssues[0].id, "groupDefaultName-alt-placeholder");
+  assert.equal(groupIssues[0].severity, "fail");
+});
+
+test("a group with real, descriptive alt text is not flagged", async () => {
+  const issues = await altTextIssuesById();
+  assert.deepEqual(issues.get("groupGoodAlt"), []);
+});
+
+test("an element inside a group with no alt text of its own is still flagged", async () => {
+  const issues = await altTextIssuesById();
+  const found = issues.get("visInGroupMissingAlt") ?? [];
+  assert.equal(found.length, 1);
+  assert.equal(found[0].id, "visInGroupMissingAlt-alt-missing");
+  assert.equal(found[0].severity, "fail");
+});
+
 test("a real visual with alt text set is not flagged", async () => {
   const issues = await altTextIssuesById();
   assert.deepEqual(issues.get("visGoodAlt"), []);

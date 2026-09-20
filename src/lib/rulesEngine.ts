@@ -354,10 +354,15 @@ function visualTitleRule(v: ParsedVisual): Issue | null {
 }
 
 // Power BI's "Group" action names a new group "Group", then "Group 1",
-// "Group 2", ... A group left with that default name (or no name at all)
-// gives a screen-reader user navigating the Selection pane nothing to go on
-// - unlike a chart, a group has no bound fields to fall back on describing
-// itself. Scoped to visualGroup only; skipTitleCheck already keeps this out
+// "Group 2", ... An unnamed or default-named group is an authoring-hygiene
+// concern (it's the Selection pane, an author-only surface, that this makes
+// harder to navigate) rather than something a report *viewer*'s screen
+// reader experience depends on - that's covered by the group's own alt text
+// (see altTextRule/isPureDecoration above). Advisory-only: "info" severity,
+// excluded from the score and from --fail-on, same as customVisuals.
+// DEFAULT_GROUP_NAME only matches English default names (e.g. misses
+// "Grupo 1") - known gap, tracked as a follow-up idea rather than fixed
+// here. Scoped to visualGroup only; skipTitleCheck already keeps this out
 // of visualTitleRule's path so the two never double-report the same visual.
 const DEFAULT_GROUP_NAME = /^group\s*\d*$/i;
 
@@ -368,10 +373,10 @@ function visualGroupNameRule(v: ParsedVisual): Issue | null {
     return {
       id: `${v.id}-group-name-missing`,
       category: "visualTitles",
-      severity: "warn",
+      severity: "info",
       title: "Group has no name",
       detail: `${describeVisual(v)} has no display name.`,
-      why: "Screen reader users navigating the Selection pane rely on a group's name to know what it contains.",
+      why: "An unnamed group is harder for whoever maintains this report next to identify in the Selection pane - an authoring hygiene note, not something a report viewer's screen reader experience depends on.",
       fix: "Selection pane → double-click the group → give it a short, specific name describing its contents.",
       visualId: v.id,
     };
@@ -380,10 +385,10 @@ function visualGroupNameRule(v: ParsedVisual): Issue | null {
     return {
       id: `${v.id}-group-name-default`,
       category: "visualTitles",
-      severity: "warn",
+      severity: "info",
       title: "Group uses default name",
       detail: `${describeVisual(v)} still has Power BI's default group name.`,
-      why: `A name like "${name}" tells screen reader users nothing about what the group contains.`,
+      why: `A name like "${name}" tells the next person editing this report nothing about what the group contains - an authoring hygiene note, same as the missing-name case.`,
       fix: 'Selection pane → double-click the group → rename it to describe its contents (e.g. "Regional KPIs").',
       visualId: v.id,
     };
