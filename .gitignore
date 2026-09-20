@@ -3,11 +3,12 @@ dist/
 *.log
 .DS_Store
 
-# Claude Code project config is local-only by default (personal skill
-# installs, local settings), except the AIDD-sourced commands/skills below,
-# which are shared project conventions and should be tracked.
-.claude/*
-!.claude/commands/
-!.claude/skills/
-.claude/skills/*
-!.claude/skills/aidd-*/
+# AIDD (https://github.com/paralleldrive/aidd) and this repo's own
+# vision/plan/task docs are local-dev-only, not shared project files —
+# install AIDD yourself if you want that workflow (see README.md).
+.claude/
+CLAUDE.md
+vision.md
+plan.md
+tasks/
+ai/
