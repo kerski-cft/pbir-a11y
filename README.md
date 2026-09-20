@@ -172,7 +172,7 @@ across unchanged except where noted below:
 | File | Status |
 |---|---|
 | `contrastUtils.ts`, `apca.ts`, `colourblindUtils.ts`, `contrastSuggest.ts`, `fontScaling.ts`, `clutterIndex.ts`, `customVisuals.ts` | **Unchanged.** Pure logic, no browser dependency. |
-| `rulesEngine.ts`, `pbixParser.ts` | **Extended for visual-group support.** `pbixParser.ts` now parses and forwards a group's `groupDisplayName`; `rulesEngine.ts` uses it to describe groups in messages and to flag a group left with no name or Power BI's default name. No existing rule's logic or output changed for non-group visuals. |
+| `rulesEngine.ts`, `pbixParser.ts` | **Extended for visual-group support.** `pbixParser.ts` now parses and forwards a group's `groupDisplayName`; `rulesEngine.ts` uses it to describe groups in messages, gives groups the same `altText` presence/placeholder checks as any other visual (Desktop does offer groups a static alt-text field), and flags a group left with no name or Power BI's default name. No existing rule's logic or output changed for non-group visuals. |
 | `pbirParser.ts` | **Lightly refactored.** The original `parsePbir(file: File)` only ever loaded a zip via a browser file-drop. It's now split into `parsePbir(file: File)` (unchanged, still there for anything browser-based) and a new `parsePbirFromZip(zip, name, size)` that takes an already-built JSZip instance. `parsePbir` calls `parsePbirFromZip` internally: no rule logic changed, only where the zip gets built. |
 
 Everything under `src/io/` and `src/commands/`, plus `src/cli.ts`, is new, as
@@ -200,9 +200,7 @@ equivalent in a CLI; the CLI's `check` command replaces their role.
 
 ## Development
 
-Working on `pbir-a11y` itself (not just using it)? See
-[`vision.md`](./vision.md) and [`CLAUDE.md`](./CLAUDE.md) first for this
-repo's goals, constraints, and conventions. Day-to-day commands:
+Working on `pbir-a11y` itself (not just using it)? Day-to-day commands:
 
 ```bash
 npm run build      # Compile TypeScript to dist/

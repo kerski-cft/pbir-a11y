@@ -194,9 +194,11 @@ function typeIs(v: ParsedVisual, ...patterns: string[]): boolean {
 }
 
 // A visual-group container (a layout grouping of other visuals, no data of
-// its own). Power BI Desktop doesn't offer it an alt-text or title field, so
-// it's out of scope for both rules below - distinct from "pure decoration",
-// which is about shapes/images that happen to carry no content.
+// its own). Power BI Desktop DOES offer it a static alt-text field (Format
+// pane → Properties) - screen reader focus lands on the group before its
+// contents, so it still needs one - but it takes no chart-style title, so
+// it's out of scope for the title rule below - distinct from "pure
+// decoration", which is about shapes/images that happen to carry no content.
 function isVisualGroup(v: ParsedVisual): boolean {
   return (v.type ?? "").toLowerCase().trim() === "visualgroup";
 }
@@ -204,9 +206,10 @@ function isVisualGroup(v: ParsedVisual): boolean {
 // "Pure decoration" = a shape/textbox/image visual with no text inside it.
 // These are visual scaffolding (dividers, background panels, decorative
 // images) and don't need alt text. As soon as a shape carries text, screen
-// reader users need an alt-text equivalent.
+// reader users need an alt-text equivalent. Visual groups are never pure
+// decoration - see isVisualGroup above - they get their own alt-text checks
+// via altTextRule below, same as any other visual.
 function isPureDecoration(v: ParsedVisual): boolean {
-  if (isVisualGroup(v)) return true;
   const t = (v.type ?? "").toLowerCase().trim();
   if (!t) return true;
   if (new Set(["text", "label", "header", "background"]).has(t)) return !v.hasText;
@@ -228,11 +231,24 @@ function skipTitleCheck(v: ParsedVisual): boolean {
 
 // ---- Per-visual rules ----
 
+// Group alt text can only ever be a static string in Power BI - unlike a
+// chart, there's no field/measure binding available for it - so the fix
+// text must not suggest one. Steer authors toward describing the group and
+// roughly how many items it holds, without a literal count: an exact number
+// goes stale the moment a visual is added to or removed from the group.
+const GROUP_ALT_FIX = {
+  missing: "In Power BI, select the group → Format pane → Properties → Alt text. Describe what the group represents and roughly how many items it holds - skip an exact count, since that can go stale as visuals are added or removed.",
+  tooShort: "Describe what the group represents and roughly how many items it holds, in a full sentence - skip an exact count, since that can go stale.",
+  placeholder: "Replace with a description of what the group represents and roughly how many items it holds - skip an exact count, since that can go stale.",
+};
+
 function altTextRule(v: ParsedVisual): Issue | null {
   // Only skip pure decoration (empty shapes, textboxes, images). Buttons,
-  // navigators, slicers and shapes-containing-text DO need alt text so screen
-  // reader users get an equivalent of what sighted users see.
+  // navigators, slicers, shapes-containing-text, and visual groups DO need
+  // alt text so screen reader users get an equivalent of what sighted users
+  // see (for a group, that a group exists at all and roughly what it holds).
   if (isPureDecoration(v)) return null;
+  const isGroup = isVisualGroup(v);
   if (!v.altText) {
     return {
       id: `${v.id}-alt-missing`,
@@ -241,7 +257,9 @@ function altTextRule(v: ParsedVisual): Issue | null {
       title: "Missing alt text",
       detail: `${describeVisual(v)} has no alt text.`,
       why: "Screen reader users rely on alt text to understand non-text visuals.",
-      fix: "In Power BI, select the visual → Format pane → General → Alt text. Describe what the visual shows and the key insight.",
+      fix: isGroup
+        ? GROUP_ALT_FIX.missing
+        : "In Power BI, select the visual → Format pane → General → Alt text. Describe what the visual shows and the key insight.",
       visualId: v.id,
     };
   }
@@ -254,7 +272,9 @@ function altTextRule(v: ParsedVisual): Issue | null {
       title: "Empty alt text",
       detail: `${describeVisual(v)} has alt text that is too short (${v.altText.length} chars).`,
       why: "Screen readers will announce nothing useful for very short alt text.",
-      fix: "Write a descriptive sentence covering both the chart type and the insight it conveys.",
+      fix: isGroup
+        ? GROUP_ALT_FIX.tooShort
+        : "Write a descriptive sentence covering both the chart type and the insight it conveys.",
       visualId: v.id,
     };
   }
@@ -266,7 +286,7 @@ function altTextRule(v: ParsedVisual): Issue | null {
       title: "Placeholder alt text",
       detail: `${describeVisual(v)} uses placeholder alt text: "${v.altText}"`,
       why: "Placeholder text gives users nothing meaningful and signals the field was skipped.",
-      fix: "Replace with a concrete description of the data and trend shown.",
+      fix: isGroup ? GROUP_ALT_FIX.placeholder : "Replace with a concrete description of the data and trend shown.",
       visualId: v.id,
     };
   }

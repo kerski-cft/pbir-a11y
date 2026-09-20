@@ -4,11 +4,11 @@ dist/
 .DS_Store
 
 # AIDD (https://github.com/paralleldrive/aidd) and this repo's own
-# vision/plan/task docs are local-dev-only, not shared project files —
-# install AIDD yourself if you want that workflow (see README.md).
+# vision/plan/task docs are local-dev-only, not shared project files.
 .claude/
 CLAUDE.md
 vision.md
 plan.md
+plan/
 tasks/
 ai/
