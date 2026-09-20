@@ -39,6 +39,14 @@ test("a decorative shape with a non-hidden tab order is flagged for tabOrder", a
   assert.equal(found[0].severity, "warn");
 });
 
+test("a decorative shape nested inside a group is still flagged for a non-hidden tab order", async () => {
+  const issues = await issuesByVisualId("tabOrder");
+  const found = issues.get("decorativeShapeInGroup") ?? [];
+  assert.equal(found.length, 1);
+  assert.equal(found[0].id, "decorativeShapeInGroup-tab-decorative-focusable");
+  assert.equal(found[0].severity, "warn");
+});
+
 test("a page with unique tab orders and no focusable decorative shapes is not flagged for tabOrder", async () => {
   const issues = await pageIssuesById("tabOrder");
   assert.deepEqual(issues.get("Page1"), []);

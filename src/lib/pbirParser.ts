@@ -108,10 +108,13 @@ async function synthesiseLayoutFromSplitFiles(
       const pos = v.position ?? {};
       // A visual-group container (a layout grouping of other visuals) has a
       // `visualGroup` key instead of `visual`. It isn't a renderable chart -
-      // Power BI Desktop doesn't even offer it an alt-text field - so it must
-      // be tagged with its own type rather than falling through to `v` and
-      // resolving to "unknown", which the rule engine can't distinguish from
-      // a genuine unrecognised visual.
+      // it still gets its own alt-text field in Desktop (Format pane →
+      // Properties), stored the same way any other visual container's is
+      // (`visualContainerObjects.general[0].properties.altText`, at the top
+      // level here since there's no nested `visual` object to hold it) - but
+      // it must be tagged with its own type rather than falling through to
+      // `v` and resolving to "unknown", which the rule engine can't
+      // distinguish from a genuine unrecognised visual.
       const isGroup = !!v.visualGroup && !v.visual;
       const visual = v.visual ?? v;
       // Modern PBIR stores tab order at a few possible locations. Forward all
